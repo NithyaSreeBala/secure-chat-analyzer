@@ -1,0 +1,24 @@
+# Python virtual environment
+backend/venv/
+
+# Python cache
+__pycache__/
+backend/__pycache__/
+
+# Environment variables / secrets
+.env
+backend/.env
+
+# Flask instance data
+backend/instance/
+
+# Python compiled files
+*.pyc
+*.pyo
+
+# IDE files
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

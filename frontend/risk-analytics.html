@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Risk Analytics — Secure Chat Analyser</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .analytics-wrapper {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    .analytics-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .analytics-header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .analytics-header p {
+      margin-top: 8px;
+      color: #6b7280;
+    }
+
+    .header-buttons button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .back-btn {
+      background: #374151;
+    }
+
+    .refresh-btn {
+      background: #2563eb;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .summary-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .summary-card h3 {
+      margin: 0 0 10px;
+      color: #6b7280;
+      font-size: 15px;
+    }
+
+    .summary-card strong {
+      font-size: 30px;
+    }
+
+    .total {
+      color: #2563eb;
+    }
+
+    .flagged {
+      color: #dc2626;
+    }
+
+    .safe {
+      color: #16a34a;
+    }
+
+    .chart-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .chart-card h2 {
+      margin-top: 0;
+    }
+
+    .bar-container {
+      margin: 20px 0;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .bar-background {
+      height: 30px;
+      background: #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    .safe-bar {
+      background: #16a34a;
+    }
+
+    .low-bar {
+      background: #2563eb;
+    }
+
+    .medium-bar {
+      background: #f59e0b;
+    }
+
+    .high-bar {
+      background: #dc2626;
+    }
+
+    .risk-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .risk-card {
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      background: #f9fafb;
+    }
+
+    .risk-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .risk-card strong {
+      font-size: 28px;
+    }
+
+    .safe-card {
+      border-left: 5px solid #16a34a;
+    }
+
+    .low-card {
+      border-left: 5px solid #2563eb;
+    }
+
+    .medium-card {
+      border-left: 5px solid #f59e0b;
+    }
+
+    .high-card {
+      border-left: 5px solid #dc2626;
+    }
+
+    .percentage {
+      color: #6b7280;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 800px) {
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .risk-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .analytics-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+    }
+
+    @media (max-width: 500px) {
+
+      .risk-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .analytics-wrapper {
+        padding: 15px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="analytics-wrapper">
+
+    <div class="analytics-header">
+
+      <div>
+
+        <h1>📊 Risk Analytics</h1>
+
+        <p>
+          Analyze the security risk distribution of chat activity
+        </p>
+
+      </div>
+
+      <div class="header-buttons">
+
+        <button
+          class="back-btn"
+          onclick="window.location.href='index.html'">
+          ← Back to Chat
+        </button>
+
+        <button
+          class="refresh-btn"
+          onclick="loadAnalytics()">
+          🔄 Refresh
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="summary">
+
+      <div class="summary-card">
+
+        <h3>Total Messages</h3>
+
+        <strong
+          id="totalMessages"
+          class="total">
+          0
+        </strong>
+
+      </div>
+
+      <div class="summary-card">
+
+        <h3>Flagged Messages</h3>
+
+        <strong
+          id="flaggedMessages"
+          class="flagged">
+          0
+        </strong>
+
+      </div>
+
+      <div class="summary-card">
+
+        <h3>Safe Messages</h3>
+
+        <strong
+          id="safeMessages"
+          class="safe">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div class="chart-card">
+
+      <h2>Risk Distribution</h2>
+
+      <div class="bar-container">
+
+        <div class="bar-label">
+
+          <span>SAFE</span>
+
+          <span id="safeCount">0</span>
+
+        </div>
+
+        <div class="bar-background">
+
+          <div
+            id="safeBar"
+            class="bar safe-bar">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="bar-container">
+
+        <div class="bar-label">
+
+          <span>LOW</span>
+
+          <span id="lowCount">0</span>
+
+        </div>
+
+        <div class="bar-background">
+
+          <div
+            id="lowBar"
+            class="bar low-bar">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="bar-container">
+
+        <div class="bar-label">
+
+          <span>MEDIUM</span>
+
+          <span id="mediumCount">0</span>
+
+        </div>
+
+        <div class="bar-background">
+
+          <div
+            id="mediumBar"
+            class="bar medium-bar">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="bar-container">
+
+        <div class="bar-label">
+
+          <span>HIGH</span>
+
+          <span id="highCount">0</span>
+
+        </div>
+
+        <div class="bar-background">
+
+          <div
+            id="highBar"
+            class="bar high-bar">
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="chart-card">
+
+      <h2>Risk Summary</h2>
+
+      <div class="risk-summary">
+
+        <div class="risk-card safe-card">
+
+          <h3>🟢 SAFE</h3>
+
+          <strong id="safeCardCount">
+            0
+          </strong>
+
+          <div
+            id="safePercentage"
+            class="percentage">
+            0%
+          </div>
+
+        </div>
+
+        <div class="risk-card low-card">
+
+          <h3>🔵 LOW</h3>
+
+          <strong id="lowCardCount">
+            0
+          </strong>
+
+          <div
+            id="lowPercentage"
+            class="percentage">
+            0%
+          </div>
+
+        </div>
+
+        <div class="risk-card medium-card">
+
+          <h3>🟠 MEDIUM</h3>
+
+          <strong id="mediumCardCount">
+            0
+          </strong>
+
+          <div
+            id="mediumPercentage"
+            class="percentage">
+            0%
+          </div>
+
+        </div>
+
+        <div class="risk-card high-card">
+
+          <h3>🔴 HIGH</h3>
+
+          <strong id="highCardCount">
+            0
+          </strong>
+
+          <div
+            id="highPercentage"
+            class="percentage">
+            0%
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+
+  <script>
+
+    async function loadAnalytics() {
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_BASE}/api/risk-analytics`
+          );
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Failed to load analytics"
+          );
+
+        }
+
+        const data =
+          await response.json();
+
+        const total =
+          data.total_messages || 0;
+
+        document.getElementById(
+          "totalMessages"
+        ).textContent =
+          total;
+
+        document.getElementById(
+          "flaggedMessages"
+        ).textContent =
+          data.flagged;
+
+        document.getElementById(
+          "safeMessages"
+        ).textContent =
+          data.safe;
+
+        document.getElementById(
+          "safeCount"
+        ).textContent =
+          data.safe;
+
+        document.getElementById(
+          "lowCount"
+        ).textContent =
+          data.low;
+
+        document.getElementById(
+          "mediumCount"
+        ).textContent =
+          data.medium;
+
+        document.getElementById(
+          "highCount"
+        ).textContent =
+          data.high;
+
+        const safePercent =
+          total
+            ? (data.safe / total) * 100
+            : 0;
+
+        const lowPercent =
+          total
+            ? (data.low / total) * 100
+            : 0;
+
+        const mediumPercent =
+          total
+            ? (data.medium / total) * 100
+            : 0;
+
+        const highPercent =
+          total
+            ? (data.high / total) * 100
+            : 0;
+
+        document.getElementById(
+          "safeBar"
+        ).style.width =
+          safePercent + "%";
+
+        document.getElementById(
+          "lowBar"
+        ).style.width =
+          lowPercent + "%";
+
+        document.getElementById(
+          "mediumBar"
+        ).style.width =
+          mediumPercent + "%";
+
+        document.getElementById(
+          "highBar"
+        ).style.width =
+          highPercent + "%";
+
+        document.getElementById(
+          "safeCardCount"
+        ).textContent =
+          data.safe;
+
+        document.getElementById(
+          "lowCardCount"
+        ).textContent =
+          data.low;
+
+        document.getElementById(
+          "mediumCardCount"
+        ).textContent =
+          data.medium;
+
+        document.getElementById(
+          "highCardCount"
+        ).textContent =
+          data.high;
+
+        document.getElementById(
+          "safePercentage"
+        ).textContent =
+          safePercent.toFixed(1) + "%";
+
+        document.getElementById(
+          "lowPercentage"
+        ).textContent =
+          lowPercent.toFixed(1) + "%";
+
+        document.getElementById(
+          "mediumPercentage"
+        ).textContent =
+          mediumPercent.toFixed(1) + "%";
+
+        document.getElementById(
+          "highPercentage"
+        ).textContent =
+          highPercent.toFixed(1) + "%";
+
+      } catch (error) {
+
+        console.error(
+          "Analytics error:",
+          error
+        );
+
+        alert(
+          "Could not load risk analytics."
+        );
+
+      }
+
+    }
+
+    loadAnalytics();
+
+  </script>
+
+</body>
+
+</html>

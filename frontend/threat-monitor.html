@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Threat Monitor — Secure Chat Analyser</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .threat-wrapper {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    .threat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .threat-header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .back-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #374151;
+      color: white;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      opacity: 0.9;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .summary-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .summary-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #6b7280;
+    }
+
+    .summary-card strong {
+      font-size: 30px;
+    }
+
+    .high-number {
+      color: #dc2626;
+    }
+
+    .medium-number {
+      color: #d97706;
+    }
+
+    .total-number {
+      color: #2563eb;
+    }
+
+    .threat-table-wrapper {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 14px;
+      background: #f9fafb;
+      color: #4b5563;
+    }
+
+    td {
+      padding: 14px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .risk-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .risk-high {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .risk-medium {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .sensitive-yes {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+
+    .sensitive-no {
+      color: #16a34a;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+
+    .refresh-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .refresh-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 700px) {
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .threat-wrapper {
+        padding: 15px;
+      }
+
+      .threat-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="threat-wrapper">
+
+    <div class="threat-header">
+
+      <div>
+        <h1>🚨 Live Threat Monitor</h1>
+        <p>
+          Monitor medium and high-risk chat activity
+        </p>
+      </div>
+
+      <div>
+
+        <button
+          class="back-btn"
+          onclick="window.location.href='index.html'">
+          ← Back to Chat
+        </button>
+
+        <button
+          class="refresh-btn"
+          onclick="loadThreats()">
+          🔄 Refresh
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="summary">
+
+      <div class="summary-card">
+
+        <h3>Total Threats</h3>
+
+        <strong
+          id="totalThreats"
+          class="total-number">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <h3>High Risk</h3>
+
+        <strong
+          id="highThreats"
+          class="high-number">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <h3>Medium Risk</h3>
+
+        <strong
+          id="mediumThreats"
+          class="medium-number">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="threat-table-wrapper">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>User</th>
+
+            <th>Risk Level</th>
+
+            <th>Toxicity Score</th>
+
+            <th>Sensitive Info</th>
+
+            <th>Time</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="threatTableBody">
+
+          <tr>
+
+            <td
+              colspan="5"
+              class="empty-message">
+
+              Loading threats...
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <script src="config.js"></script>
+
+
+  <script>
+
+    async function loadThreats() {
+
+      const tableBody =
+        document.getElementById(
+          "threatTableBody"
+        );
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_BASE}/api/threat-monitor`
+          );
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Failed to load threat data"
+          );
+
+        }
+
+        const threats =
+          await response.json();
+
+
+        document.getElementById(
+          "totalThreats"
+        ).textContent =
+          threats.length;
+
+
+        const highCount =
+          threats.filter(
+            threat =>
+              threat.risk_level === "HIGH"
+          ).length;
+
+
+        const mediumCount =
+          threats.filter(
+            threat =>
+              threat.risk_level === "MEDIUM"
+          ).length;
+
+
+        document.getElementById(
+          "highThreats"
+        ).textContent =
+          highCount;
+
+
+        document.getElementById(
+          "mediumThreats"
+        ).textContent =
+          mediumCount;
+
+
+        if (threats.length === 0) {
+
+          tableBody.innerHTML = `
+            <tr>
+              <td
+                colspan="5"
+                class="empty-message">
+                ✅ No threats detected
+              </td>
+            </tr>
+          `;
+
+          return;
+        }
+
+
+        tableBody.innerHTML =
+          threats.map(threat => {
+
+            const riskClass =
+              threat.risk_level === "HIGH"
+                ? "risk-high"
+                : "risk-medium";
+
+
+            const sensitiveText =
+              threat.has_sensitive_info
+                ? `<span class="sensitive-yes">
+                     ⚠️ Yes
+                   </span>`
+                : `<span class="sensitive-no">
+                     ✓ No
+                   </span>`;
+
+
+            const date =
+              new Date(
+                threat.timestamp
+              );
+
+
+            const formattedTime =
+              date.toLocaleString();
+
+
+            return `
+              <tr>
+
+                <td>
+                  👤
+                  ${escapeHtml(
+                    threat.username
+                  )}
+                </td>
+
+                <td>
+
+                  <span
+                    class="risk-badge ${riskClass}">
+
+                    ${threat.risk_level}
+
+                  </span>
+
+                </td>
+
+                <td>
+                  ${threat.toxicity_score}
+                </td>
+
+                <td>
+                  ${sensitiveText}
+                </td>
+
+                <td>
+                  ${formattedTime}
+                </td>
+
+              </tr>
+            `;
+
+          }).join("");
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        tableBody.innerHTML = `
+          <tr>
+            <td
+              colspan="5"
+              class="empty-message">
+
+              ❌ Could not load threat data.
+
+            </td>
+          </tr>
+        `;
+
+      }
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value)
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    loadThreats();
+
+  </script>
+
+</body>
+
+</html>

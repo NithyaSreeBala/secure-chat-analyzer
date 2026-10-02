@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>User Risk Profiles | Secure Chat Analyser</title>
+
+    <link rel="stylesheet" href="style.css">
+
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f7fb;
+
+            color: #1f2937;
+
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        .profiles-header {
+
+            background: #111827;
+
+            color: white;
+
+            padding: 20px 35px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+        .profiles-header h1 {
+
+            margin: 0;
+
+            font-size: 24px;
+
+        }
+
+
+        .profiles-header p {
+
+            margin: 5px 0 0;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+
+        }
+
+
+        .back-btn {
+
+            text-decoration: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 10px 18px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =====================================
+           PAGE
+        ===================================== */
+
+        .page-container {
+
+            padding: 30px;
+
+            max-width: 1200px;
+
+            margin: auto;
+
+        }
+
+
+        /* =====================================
+           SUMMARY
+        ===================================== */
+
+        .summary-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .summary-card {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+        }
+
+
+        .summary-card .icon {
+
+            font-size: 25px;
+
+        }
+
+
+        .summary-card h3 {
+
+            margin: 12px 0 5px;
+
+            font-size: 28px;
+
+        }
+
+
+        .summary-card p {
+
+            margin: 0;
+
+            color: #64748b;
+
+        }
+
+
+        /* =====================================
+           SEARCH
+        ===================================== */
+
+        .search-area {
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .search-area input,
+        .search-area select {
+
+            padding: 12px 15px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            background: white;
+
+        }
+
+
+        .search-area input {
+
+            flex: 1;
+
+        }
+
+
+        /* =====================================
+           USERS
+        ===================================== */
+
+        .users-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+
+        }
+
+
+        .user-card {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+
+            transition: 0.25s;
+
+            border: 1px solid #e5e7eb;
+
+            cursor: pointer;
+
+        }
+
+
+        .user-card:hover {
+
+            transform: translateY(-5px);
+
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+
+            border-color: #2563eb;
+
+        }
+
+
+        .user-top {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+        }
+
+
+        .avatar {
+
+            width: 52px;
+
+            height: 52px;
+
+            border-radius: 50%;
+
+            background: #dbeafe;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 25px;
+
+        }
+
+
+        .username {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+        }
+
+
+        .status {
+
+            font-size: 12px;
+
+            margin-top: 4px;
+
+        }
+
+
+        /* =====================================
+           RISK
+        ===================================== */
+
+        .risk-section {
+
+            margin-top: 20px;
+
+        }
+
+
+        .risk-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .progress {
+
+            width: 100%;
+
+            height: 9px;
+
+            background: #e5e7eb;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+        }
+
+
+        .progress-bar {
+
+            height: 100%;
+
+            border-radius: 20px;
+
+        }
+
+
+        .risk-high {
+
+            background: #ef4444;
+
+        }
+
+
+        .risk-medium {
+
+            background: #f59e0b;
+
+        }
+
+
+        .risk-low {
+
+            background: #22c55e;
+
+        }
+
+
+        /* =====================================
+           STATS
+        ===================================== */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-top: 20px;
+
+        }
+
+
+        .stat {
+
+            background: #f8fafc;
+
+            padding: 12px 5px;
+
+            border-radius: 9px;
+
+            text-align: center;
+
+        }
+
+
+        .stat strong {
+
+            display: block;
+
+            font-size: 18px;
+
+        }
+
+
+        .stat span {
+
+            font-size: 11px;
+
+            color: #64748b;
+
+        }
+
+
+        /* =====================================
+           BADGES
+        ===================================== */
+
+        .badge {
+
+            display: inline-block;
+
+            margin-top: 18px;
+
+            padding: 7px 11px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+        }
+
+
+        .badge-repeat {
+
+            background: #fee2e2;
+
+            color: #b91c1c;
+
+        }
+
+
+        .badge-monitor {
+
+            background: #fef3c7;
+
+            color: #92400e;
+
+        }
+
+
+        .badge-normal {
+
+            background: #dcfce7;
+
+            color: #166534;
+
+        }
+
+
+        /* =====================================
+           PROFILE MODAL
+        ===================================== */
+
+        .profile-modal {
+
+            width: min(560px, 90vw);
+
+            border: none;
+
+            border-radius: 18px;
+
+            padding: 0;
+
+            box-shadow: 0 25px 70px rgba(0,0,0,0.30);
+
+        }
+
+
+        .profile-modal::backdrop {
+
+            background: rgba(15, 23, 42, 0.70);
+
+        }
+
+
+        .modal-content {
+
+            background: white;
+
+            padding: 28px;
+
+        }
+
+
+        .modal-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .modal-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+        }
+
+
+        .modal-avatar {
+
+            width: 60px;
+
+            height: 60px;
+
+            border-radius: 50%;
+
+            background: #dbeafe;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 30px;
+
+        }
+
+
+        .modal-title h2 {
+
+            margin: 0;
+
+            font-size: 22px;
+
+        }
+
+
+        .modal-title p {
+
+            margin: 5px 0 0;
+
+            color: #64748b;
+
+            font-size: 13px;
+
+        }
+
+
+        .close-modal {
+
+            border: none;
+
+            background: #f1f5f9;
+
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 50%;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+        }
+
+
+        .close-modal:hover {
+
+            background: #e2e8f0;
+
+        }
+
+
+        .modal-risk {
+
+            background: #f8fafc;
+
+            border-radius: 14px;
+
+            padding: 18px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .modal-risk-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 10px;
+
+            font-weight: bold;
+
+        }
+
+
+        .modal-progress {
+
+            width: 100%;
+
+            height: 12px;
+
+            background: #e2e8f0;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+        }
+
+
+        .modal-progress-bar {
+
+            height: 100%;
+
+            border-radius: 20px;
+
+        }
+
+
+        .modal-stats {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .modal-stat {
+
+            background: #f8fafc;
+
+            padding: 16px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+        }
+
+
+        .modal-stat strong {
+
+            display: block;
+
+            font-size: 25px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .modal-stat span {
+
+            font-size: 12px;
+
+            color: #64748b;
+
+        }
+
+
+        .risk-explanation {
+
+            background: #eff6ff;
+
+            border-left: 4px solid #2563eb;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .modal-footer {
+
+            margin-top: 20px;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+        }
+
+
+        .modal-close-btn {
+
+            border: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 10px 20px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 900px) {
+
+            .summary-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+
+            .users-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .summary-grid,
+            .users-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .profiles-header {
+
+                padding: 18px;
+
+            }
+
+
+            .page-container {
+
+                padding: 18px;
+
+            }
+
+
+            .search-area {
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         HEADER
+    ===================================== -->
+
+    <header class="profiles-header">
+
+        <div>
+
+            <h1>👥 User Risk Profiles</h1>
+
+            <p>
+                AI-powered security monitoring for chat users
+            </p>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="back-btn"
+        >
+            ← Back to Chat
+        </a>
+
+    </header>
+
+
+
+    <!-- =====================================
+         MAIN
+    ===================================== -->
+
+    <main class="page-container">
+
+
+        <!-- SUMMARY -->
+
+        <section class="summary-grid">
+
+
+            <div class="summary-card">
+
+                <div class="icon">
+                    👥
+                </div>
+
+                <h3 id="totalUsers">
+                    0
+                </h3>
+
+                <p>
+                    Total Users
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="icon">
+                    🚨
+                </div>
+
+                <h3 id="totalFlagged">
+                    0
+                </h3>
+
+                <p>
+                    Flagged Messages
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="icon">
+                    🔴
+                </div>
+
+                <h3 id="repeatUsers">
+                    0
+                </h3>
+
+                <p>
+                    Repeat Offenders
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="icon">
+                    🛡️
+                </div>
+
+                <h3 id="systemStatus">
+                    ACTIVE
+                </h3>
+
+                <p>
+                    AI Security
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SEARCH -->
+
+        <div class="search-area">
+
+            <input
+                type="text"
+                id="searchUsers"
+                placeholder="🔍 Search username..."
+            >
+
+
+            <select id="riskFilter">
+
+                <option value="all">
+                    All Risk Levels
+                </option>
+
+                <option value="high">
+                    🔴 High Risk
+                </option>
+
+                <option value="medium">
+                    🟠 Medium Risk
+                </option>
+
+                <option value="low">
+                    🟢 Low Risk
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- USERS -->
+
+        <section
+            class="users-grid"
+            id="usersGrid"
+        >
+
+            <!-- User cards will appear here -->
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================
+         PROFILE DETAILS MODAL
+    ===================================== -->
+
+    <dialog
+        id="profileModal"
+        class="profile-modal"
+    >
+
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+
+                <div class="modal-title">
+
+                    <div class="modal-avatar">
+                        👤
+                    </div>
+
+                    <div>
+
+                        <h2 id="modalUsername">
+                            User
+                        </h2>
+
+                        <p id="modalStatus">
+                            Security status
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    id="closeModalBtn"
+                    aria-label="Close profile"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+
+            <!-- RISK -->
+
+            <div class="modal-risk">
+
+                <div class="modal-risk-row">
+
+                    <span>
+                        🛡️ Risk Score
+                    </span>
+
+                    <span id="modalRiskScore">
+                        0/100
+                    </span>
+
+                </div>
+
+
+                <div class="modal-progress">
+
+                    <div
+                        id="modalRiskBar"
+                        class="modal-progress-bar risk-low"
+                        style="width:0%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- STATISTICS -->
+
+            <div class="modal-stats">
+
+
+                <div class="modal-stat">
+
+                    <strong id="modalMessages">
+                        0
+                    </strong>
+
+                    <span>
+                        💬 Total Messages
+                    </span>
+
+                </div>
+
+
+                <div class="modal-stat">
+
+                    <strong id="modalFlagged">
+                        0
+                    </strong>
+
+                    <span>
+                        🚨 Flagged Messages
+                    </span>
+
+                </div>
+
+
+                <div class="modal-stat">
+
+                    <strong id="modalHigh">
+                        0
+                    </strong>
+
+                    <span>
+                        🔴 HIGH Risk
+                    </span>
+
+                </div>
+
+
+                <div class="modal-stat">
+
+                    <strong id="modalMedium">
+                        0
+                    </strong>
+
+                    <span>
+                        🟠 MEDIUM Risk
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EXPLANATION -->
+
+            <div
+                class="risk-explanation"
+                id="modalExplanation"
+            >
+                Security information will appear here.
+            </div>
+
+
+
+            <!-- FOOTER -->
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="modal-close-btn"
+                    id="modalDoneBtn"
+                >
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </dialog>
+
+
+
+    <!-- =====================================
+         JAVASCRIPT
+    ===================================== -->
+
+    <script>
+
+        let users = [];
+
+
+        /* =====================================
+           LOAD USERS
+        ===================================== */
+
+        async function loadUsers() {
+
+            try {
+
+                const response = await fetch(
+                    "http://127.0.0.1:5000/api/user-profiles"
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "API request failed"
+                    );
+
+                }
+
+
+                users = await response.json();
+
+
+                console.log(
+                    "Users loaded:",
+                    users
+                );
+
+
+                updateSummary();
+
+                displayUsers(users);
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "User profile error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "usersGrid"
+                ).innerHTML = `
+
+                    <div style="
+                        grid-column: 1 / -1;
+                        background: white;
+                        padding: 30px;
+                        text-align: center;
+                        border-radius: 15px;
+                        color: #dc2626;
+                    ">
+
+                        ❌ Unable to load user profiles.
+
+                        <br><br>
+
+                        Please make sure the Flask backend is running.
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        /* =====================================
+           RISK LEVEL
+        ===================================== */
+
+        function getRisk(score) {
+
+            if (score >= 70) {
+
+                return {
+
+                    label: "HIGH RISK",
+
+                    className: "risk-high"
+
+                };
+
+            }
+
+
+            if (score >= 30) {
+
+                return {
+
+                    label: "MEDIUM RISK",
+
+                    className: "risk-medium"
+
+                };
+
+            }
+
+
+            return {
+
+                label: "LOW RISK",
+
+                className: "risk-low"
+
+            };
+
+        }
+
+
+
+        /* =====================================
+           SECURITY BADGE
+        ===================================== */
+
+        function getBadge(flagged) {
+
+            if (flagged >= 5) {
+
+                return `
+
+                    <span class="badge badge-repeat">
+
+                        ⚠️ REPEAT OFFENDER
+
+                    </span>
+
+                `;
+
+            }
+
+
+            if (flagged >= 3) {
+
+                return `
+
+                    <span class="badge badge-monitor">
+
+                        👀 MONITOR
+
+                    </span>
+
+                `;
+
+            }
+
+
+            return `
+
+                <span class="badge badge-normal">
+
+                    ✓ NORMAL
+
+                </span>
+
+            `;
+
+        }
+
+
+
+        /* =====================================
+           DISPLAY USERS
+        ===================================== */
+
+        function displayUsers(list) {
+
+            const grid =
+                document.getElementById(
+                    "usersGrid"
+                );
+
+
+            grid.innerHTML = "";
+
+
+            if (list.length === 0) {
+
+                grid.innerHTML = `
+
+                    <div style="
+                        grid-column: 1 / -1;
+                        background:white;
+                        padding:30px;
+                        text-align:center;
+                        border-radius:15px;
+                    ">
+
+                        🔍 No users found.
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            list.forEach(user => {
+
+
+                const risk =
+                    getRisk(user.score);
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "user-card";
+
+
+                card.innerHTML = `
+
+                    <div class="user-top">
+
+                        <div class="avatar">
+                            👤
+                        </div>
+
+
+                        <div>
+
+                            <div class="username">
+
+                                ${escapeHtml(
+                                    user.username
+                                )}
+
+                            </div>
+
+
+                            <div class="status">
+
+                                ${risk.label}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="risk-section">
+
+                        <div class="risk-row">
+
+                            <span>
+                                Risk Score
+                            </span>
+
+                            <span>
+                                ${user.score}/100
+                            </span>
+
+                        </div>
+
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar ${risk.className}"
+                                style="width:${user.score}%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="stats">
+
+
+                        <div class="stat">
+
+                            <strong>
+                                ${user.messages}
+                            </strong>
+
+                            <span>
+                                Messages
+                            </span>
+
+                        </div>
+
+
+                        <div class="stat">
+
+                            <strong>
+                                ${user.flagged}
+                            </strong>
+
+                            <span>
+                                Flagged
+                            </span>
+
+                        </div>
+
+
+                        <div class="stat">
+
+                            <strong>
+                                ${user.high}
+                            </strong>
+
+                            <span>
+                                HIGH
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                    ${getBadge(user.flagged)}
+
+
+                    <div style="
+                        margin-top:12px;
+                        color:#2563eb;
+                        font-size:12px;
+                        font-weight:bold;
+                    ">
+
+                        👆 Click for details
+
+                    </div>
+
+                `;
+
+
+                /* =================================
+                   OPEN PROFILE
+                ================================= */
+
+                card.addEventListener(
+                    "click",
+                    () => {
+
+                        openProfile(user);
+
+                    }
+                );
+
+
+                grid.appendChild(card);
+
+            });
+
+        }
+
+
+
+        /* =====================================
+           ESCAPE HTML
+        ===================================== */
+
+        function escapeHtml(value) {
+
+            return String(value)
+
+                .replaceAll("&", "&amp;")
+
+                .replaceAll("<", "&lt;")
+
+                .replaceAll(">", "&gt;")
+
+                .replaceAll('"', "&quot;")
+
+                .replaceAll("'", "&#039;");
+
+        }
+
+
+
+        /* =====================================
+           UPDATE SUMMARY
+        ===================================== */
+
+        function updateSummary() {
+
+            document.getElementById(
+                "totalUsers"
+            ).textContent =
+                users.length;
+
+
+            document.getElementById(
+                "totalFlagged"
+            ).textContent =
+                users.reduce(
+                    (sum, user) =>
+                        sum + user.flagged,
+                    0
+                );
+
+
+            document.getElementById(
+                "repeatUsers"
+            ).textContent =
+                users.filter(
+                    user =>
+                        user.flagged >= 5
+                ).length;
+
+        }
+
+
+
+        /* =====================================
+           FILTER
+        ===================================== */
+
+        function filterUsers() {
+
+            const search =
+                document
+                    .getElementById(
+                        "searchUsers"
+                    )
+                    .value
+                    .toLowerCase();
+
+
+            const risk =
+                document
+                    .getElementById(
+                        "riskFilter"
+                    )
+                    .value;
+
+
+            const filtered =
+                users.filter(user => {
+
+
+                    const matchesSearch =
+                        user.username
+                            .toLowerCase()
+                            .includes(search);
+
+
+                    const matchesRisk =
+
+                        risk === "all" ||
+
+                        (
+                            risk === "high" &&
+                            user.score >= 70
+                        ) ||
+
+                        (
+                            risk === "medium" &&
+                            user.score >= 30 &&
+                            user.score < 70
+                        ) ||
+
+                        (
+                            risk === "low" &&
+                            user.score < 30
+                        );
+
+
+                    return (
+                        matchesSearch &&
+                        matchesRisk
+                    );
+
+                });
+
+
+            displayUsers(filtered);
+
+        }
+
+
+
+        /* =====================================
+           OPEN PROFILE MODAL
+        ===================================== */
+
+        function openProfile(user) {
+
+            const modal =
+                document.getElementById(
+                    "profileModal"
+                );
+
+
+            const risk =
+                getRisk(user.score);
+
+
+            document.getElementById(
+                "modalUsername"
+            ).textContent =
+                user.username;
+
+
+            document.getElementById(
+                "modalStatus"
+            ).textContent =
+                risk.label;
+
+
+            document.getElementById(
+                "modalRiskScore"
+            ).textContent =
+                `${user.score}/100`;
+
+
+            const riskBar =
+                document.getElementById(
+                    "modalRiskBar"
+                );
+
+
+            riskBar.style.width =
+                `${user.score}%`;
+
+
+            riskBar.className =
+                `modal-progress-bar ${risk.className}`;
+
+
+            document.getElementById(
+                "modalMessages"
+            ).textContent =
+                user.messages;
+
+
+            document.getElementById(
+                "modalFlagged"
+            ).textContent =
+                user.flagged;
+
+
+            document.getElementById(
+                "modalHigh"
+            ).textContent =
+                user.high;
+
+
+            document.getElementById(
+                "modalMedium"
+            ).textContent =
+                user.medium;
+
+
+            /* =================================
+               EXPLAINABLE RISK
+            ================================= */
+
+            let explanation = "";
+
+
+            if (user.score >= 70) {
+
+                explanation =
+
+                    "🔴 High-risk activity detected. " +
+
+                    "The user's risk score is elevated " +
+
+                    "because multiple HIGH and/or MEDIUM " +
+
+                    "risk messages have been detected.";
+
+            }
+
+
+            else if (user.score >= 30) {
+
+                explanation =
+
+                    "🟠 Medium-risk activity detected. " +
+
+                    "The user has flagged messages that " +
+
+                    "require security monitoring.";
+
+            }
+
+
+            else if (user.flagged > 0) {
+
+                explanation =
+
+                    "🟡 Some security-related activity " +
+
+                    "has been detected, but the current " +
+
+                    "risk score remains below the medium " +
+
+                    "risk threshold.";
+
+            }
+
+
+            else {
+
+                explanation =
+
+                    "🟢 No flagged messages are currently " +
+
+                    "associated with this user's profile.";
+
+            }
+
+
+            document.getElementById(
+                "modalExplanation"
+            ).textContent =
+                explanation;
+
+
+            modal.showModal();
+
+        }
+
+
+
+        /* =====================================
+           CLOSE MODAL
+        ===================================== */
+
+        const profileModal =
+            document.getElementById(
+                "profileModal"
+            );
+
+
+        document.getElementById(
+            "closeModalBtn"
+        ).addEventListener(
+            "click",
+            () => {
+
+                profileModal.close();
+
+            }
+        );
+
+
+        document.getElementById(
+            "modalDoneBtn"
+        ).addEventListener(
+            "click",
+            () => {
+
+                profileModal.close();
+
+            }
+        );
+
+
+
+        /* =====================================
+           SEARCH EVENTS
+        ===================================== */
+
+        document
+            .getElementById(
+                "searchUsers"
+            )
+            .addEventListener(
+                "input",
+                filterUsers
+            );
+
+
+        document
+            .getElementById(
+                "riskFilter"
+            )
+            .addEventListener(
+                "change",
+                filterUsers
+            );
+
+
+
+        /* =====================================
+           START
+        ===================================== */
+
+        loadUsers();
+
+    </script>
+
+
+</body>
+
+</html>

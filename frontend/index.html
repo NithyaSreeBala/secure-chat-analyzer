@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+
+<title>Secure Chat Analyser</title>
+
+<link rel="stylesheet" href="style.css" />
+
+<style>
+
+/* Security Notification */
+.security-notification {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: #dc2626;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    min-width: 300px;
+}
+
+.security-notification button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    float: right;
+    margin-left: 15px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+  <!-- Security Notification -->
+  <div id="securityNotification" class="security-notification">
+    <span id="notificationMessage"></span>
+    <button onclick="closeNotification()">✕</button>
+  </div>
+
+  <div class="chat-wrapper">
+
+
+    <!-- ===================================== -->
+    <!-- SIDEBAR -->
+    <!-- ===================================== -->
+
+    <aside class="sidebar">
+
+      <h2>🔒 Secure Chat Analyser</h2>
+
+
+      <!-- USER INFORMATION -->
+
+      <div class="room-info">
+
+        Room:
+        <strong id="roomLabel">-</strong>
+
+        <br />
+
+        User:
+        <strong id="userLabel">-</strong>
+
+        <br />
+
+        Role:
+        <strong id="roleLabel">-</strong>
+
+      </div>
+
+
+      <!-- LOGOUT -->
+
+      <button id="logoutBtn">
+        Logout
+      </button>
+
+
+
+      <!-- ===================================== -->
+      <!-- ADMIN PANEL -->
+      <!-- ===================================== -->
+
+      <div
+        id="adminPanel"
+        style="
+          display: none;
+          margin-top: 20px;
+          padding: 15px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 12px;
+        "
+      >
+
+        <h3 style="margin-top: 0;">
+          🛡️ Admin Panel
+        </h3>
+
+
+        <p
+          style="
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+          "
+        >
+          Security administration
+        </p>
+
+
+        <!-- USER PROFILES -->
+
+        <button
+          id="userProfilesBtn"
+          style="
+            width: 100%;
+            margin-bottom: 8px;
+            cursor: pointer;
+          "
+        >
+          👥 User Profiles
+        </button>
+
+
+        <!-- THREAT MONITOR -->
+
+        <button
+          id="threatMonitorBtn"
+          style="
+            width: 100%;
+            margin-bottom: 8px;
+            cursor: pointer;
+          "
+        >
+          🚨 Threat Monitor
+        </button>
+
+
+        <!-- RISK ANALYTICS -->
+
+        <button
+          id="riskAnalyticsBtn"
+          style="
+            width: 100%;
+            margin-bottom: 8px;
+            cursor: pointer;
+          "
+        >
+          📊 Risk Analytics
+        </button>
+
+
+        <!-- AUDIT LOG -->
+
+        <button
+          id="auditLogBtn"
+          style="
+            width: 100%;
+            cursor: pointer;
+          "
+        >
+          📋 Security Audit Log
+        </button>
+
+        <button
+          id="securityControlsBtn"
+          style="
+            width: 100%;
+            margin-top: 8px;
+            cursor: pointer;
+          "
+        >
+          🔐 Security Controls
+        </button>
+
+      </div>
+
+      <!-- Security Controls Panel -->
+      <div
+        id="securityControlsPanel"
+        style="
+          display: none;
+          margin-top: 20px;
+          padding: 20px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 12px;
+        "
+      >
+        <h3 style="margin-top: 0;">
+          🔐 Security Controls
+        </h3>
+
+        <p style="font-size: 13px; opacity: 0.8;">
+          Manage AI security and threat detection settings.
+        </p>
+
+        <div style="margin-top: 15px;">
+          <label>
+            <input type="checkbox" id="highRiskBlockingToggle" checked>
+            Enable HIGH-risk message blocking
+          </label>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <label>
+            <input type="checkbox" id="securityNotificationToggle" checked>
+            Enable security notifications
+          </label>
+        </div>
+
+        <button
+          id="closeSecurityControlsBtn"
+          style="margin-top: 15px;"
+        >
+          Close
+        </button>
+      </div>
+
+      <!-- Security Audit Log Panel -->
+      <div
+        id="auditLogPanel"
+        style="
+          display: none;
+          margin-top: 20px;
+          padding: 20px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 12px;
+        "
+      >
+        <h3 style="margin-top: 0;">
+          📋 Security Audit Log
+        </h3>
+
+        <p style="font-size: 13px; opacity: 0.8;">
+          Security events detected by the AI security system.
+        </p>
+
+        <div id="auditLogList">
+          <p style="opacity: 0.7;">
+            No security events recorded yet.
+          </p>
+        </div>
+      </div>
+
+
+
+      <!-- ===================================== -->
+      <!-- LIVE RISK DASHBOARD -->
+      <!-- ===================================== -->
+
+      <h3>
+        📊 Live Risk Dashboard
+      </h3>
+
+
+      <div
+        id="riskStats"
+        class="risk-stats"
+      >
+
+        <div class="risk-box safe">
+          SAFE:
+          <span id="countSafe">0</span>
+        </div>
+
+
+        <div class="risk-box low">
+          LOW:
+          <span id="countLow">0</span>
+        </div>
+
+
+        <div class="risk-box medium">
+          MEDIUM:
+          <span id="countMedium">0</span>
+        </div>
+
+
+        <div class="risk-box high">
+          HIGH:
+          <span id="countHigh">0</span>
+        </div>
+
+      </div>
+
+
+
+      <!-- ===================================== -->
+      <!-- ALERTS -->
+      <!-- ===================================== -->
+
+      <h3>
+        🚨 Alerts
+      </h3>
+
+
+      <div
+        id="alertsBox"
+        class="alerts-box"
+      >
+
+        <em>No alerts yet</em>
+
+      </div>
+
+    </aside>
+
+
+
+    <!-- ===================================== -->
+    <!-- MAIN CHAT -->
+    <!-- ===================================== -->
+
+    <main class="chat-main">
+
+      <!-- Secure Chat Header -->
+      <div class="secure-chat-header">
+        <div class="secure-chat-title">
+          <span class="secure-chat-icon">🔐</span>
+
+          <div>
+            <strong>SECURE CHAT CHANNEL</strong>
+            <span># general</span>
+          </div>
+        </div>
+
+        <div class="secure-chat-status">
+          <span class="status-dot"></span>
+          AI ACTIVE
+        </div>
+      </div>
+
+
+      <!-- MESSAGES -->
+
+      <div
+        id="messages"
+        class="messages"
+      ></div>
+
+
+      <!-- TYPING INDICATOR -->
+
+      <div
+        id="typingIndicator"
+        class="typing-indicator"
+      ></div>
+
+
+      <!-- MESSAGE FORM -->
+
+      <form
+        id="messageForm"
+        class="message-form"
+      >
+
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Type a message..."
+          autocomplete="off"
+        />
+
+
+        <button type="submit">
+          Send
+        </button>
+
+      </form>
+
+    </main>
+
+  </div>
+
+
+
+  <!-- ===================================== -->
+  <!-- SOCKET.IO -->
+  <!-- ===================================== -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+
+
+  <!-- CONFIG -->
+
+  <script src="config.js"></script>
+
+
+  <!-- EXISTING CHAT SCRIPT -->
+
+  <script src="script.js"></script>
+
+
+
+  <!-- ===================================== -->
+  <!-- ADMIN ROLE DISPLAY -->
+  <!-- ===================================== -->
+
+  <script>
+
+  // =====================================
+  // ADMIN ROLE DISPLAY
+  // =====================================
+
+  const adminStoredUser =
+    localStorage.getItem("user");
+
+  let adminUser = null;
+
+  try {
+
+    if (adminStoredUser) {
+      adminUser = JSON.parse(adminStoredUser);
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Could not read user information:",
+      error
+    );
+
+  }
+
+  // Get role from stored user
+
+  const adminUserRole =
+    adminUser?.role ||
+    localStorage.getItem("role") ||
+    "user";
+
+  // =====================================
+  // DISPLAY USERNAME
+  // =====================================
+
+  const adminUserLabel =
+    document.getElementById("userLabel");
+
+  const adminUsername =
+    localStorage.getItem("username");
+
+  if (adminUserLabel && adminUsername) {
+
+    adminUserLabel.textContent =
+      adminUsername;
+
+  }
+
+  // =====================================
+  // DISPLAY ROLE
+  // =====================================
+
+  const adminRoleLabel =
+    document.getElementById("roleLabel");
+
+  if (adminRoleLabel) {
+
+    adminRoleLabel.textContent =
+      adminUserRole === "admin"
+        ? "ADMIN"
+        : "USER";
+
+  }
+
+  // =====================================
+  // ADMIN PANEL
+  // =====================================
+
+  const adminPanelElement =
+    document.getElementById("adminPanel");
+
+  if (
+    adminPanelElement &&
+    adminUserRole === "admin"
+  ) {
+
+    adminPanelElement.style.display =
+      "block";
+
+    console.log(
+      "🛡️ ADMIN ACCESS ENABLED"
+    );
+
+  }
+
+  // =====================================
+  // USER PROFILES
+  // =====================================
+
+  const profilesButton =
+    document.getElementById(
+      "userProfilesBtn"
+    );
+
+  if (profilesButton) {
+
+    profilesButton.onclick = () => {
+
+      window.location.href =
+        "users.html";
+
+    };
+
+  }
+
+  // =====================================
+  // THREAT MONITOR
+  // =====================================
+
+  const threatButton =
+    document.getElementById(
+      "threatMonitorBtn"
+    );
+
+  if (threatButton) {
+
+    threatButton.onclick = () => {
+      window.location.href = "threat-monitor.html";
+    };
+
+  }
+
+  // =====================================
+  // RISK ANALYTICS
+  // =====================================
+
+  const analyticsButton =
+    document.getElementById(
+      "riskAnalyticsBtn"
+    );
+
+  if (analyticsButton) {
+
+    analyticsButton.onclick = () => {
+      window.location.href = "risk-analytics.html";
+    };
+
+  }
+
+  // =====================================
+  // SECURITY AUDIT LOG
+  // =====================================
+
+  const auditButton =
+    document.getElementById(
+      "auditLogBtn"
+    );
+
+  if (auditButton) {
+
+    auditButton.onclick = () => {
+
+      alert(
+        "📋 Security Audit Log will be added next."
+      );
+
+    };
+
+  }
+
+  // Security Notification
+  function showSecurityNotification(message) {
+      let notification = document.getElementById("securityNotification");
+
+      // Create notification if it does not already exist
+      if (!notification) {
+          notification = document.createElement("div");
+          notification.id = "securityNotification";
+          notification.className = "security-notification";
+
+          notification.innerHTML = `
+              <span id="notificationMessage"></span>
+              <button type="button" onclick="closeNotification()">✕</button>
+          `;
+
+          document.body.appendChild(notification);
+      }
+
+      const notificationMessage =
+          document.getElementById("notificationMessage");
+
+      if (notificationMessage) {
+          notificationMessage.textContent =
+              "🚨 SECURITY ALERT: " + message;
+      }
+
+      // Force notification to the front
+      notification.style.display = "block";
+      notification.style.position = "fixed";
+      notification.style.top = "20px";
+      notification.style.right = "20px";
+      notification.style.zIndex = "999999";
+      
+      // Automatically hide after 5 seconds
+      clearTimeout(window.securityNotificationTimer);
+
+      window.securityNotificationTimer = setTimeout(() => {
+          notification.style.display = "none";
+      }, 5000);
+  }
+
+  function closeNotification() {
+      const notification =
+          document.getElementById("securityNotification");
+
+      if (notification) {
+          notification.style.display = "none";
+      }
+  }
+
+  // ============================================================
+  // SECURITY CONTROLS
+  // ============================================================
+
+  const securityControlsBtn =
+      document.getElementById("securityControlsBtn");
+
+  const securityControlsPanel =
+      document.getElementById("securityControlsPanel");
+
+  const closeSecurityControlsBtn =
+      document.getElementById("closeSecurityControlsBtn");
+
+  if (securityControlsBtn && securityControlsPanel) {
+      securityControlsBtn.addEventListener("click", () => {
+          securityControlsPanel.style.display = "block";
+      });
+  }
+
+  if (closeSecurityControlsBtn && securityControlsPanel) {
+      closeSecurityControlsBtn.addEventListener("click", () => {
+          securityControlsPanel.style.display = "none";
+      });
+  }
+
+</script>
+
+</body>
+
+</html>

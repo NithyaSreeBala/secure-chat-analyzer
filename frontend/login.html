@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Secure Chat Analyser — Login</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+
+      <h1>🔒 Secure Chat Analyser</h1>
+
+      <p class="subtitle">
+        AI-monitored, encrypted real-time chat
+      </p>
+
+      <div class="tabs">
+        <button id="tabLogin" class="tab active">
+          Login
+        </button>
+
+        <button id="tabRegister" class="tab">
+          Register
+        </button>
+      </div>
+
+      <form id="authForm">
+
+        <input
+          type="text"
+          id="username"
+          placeholder="Username"
+          required
+        />
+
+        <input
+          type="password"
+          id="password"
+          placeholder="Password"
+          required
+        />
+
+        <input
+          type="text"
+          id="room"
+          placeholder="Room name (e.g. general)"
+          value="general"
+          required
+        />
+
+        <button type="submit" id="submitBtn">
+          Login
+        </button>
+
+      </form>
+
+      <p id="errorMsg" class="error"></p>
+
+    </div>
+  </div>
+
+
+  <script src="config.js"></script>
+
+  <script>
+
+    let mode = "login";
+
+    const tabLogin =
+      document.getElementById("tabLogin");
+
+    const tabRegister =
+      document.getElementById("tabRegister");
+
+    const submitBtn =
+      document.getElementById("submitBtn");
+
+    const errorMsg =
+      document.getElementById("errorMsg");
+
+
+    // =========================
+    // LOGIN TAB
+    // =========================
+
+    tabLogin.onclick = () => {
+
+      mode = "login";
+
+      tabLogin.classList.add("active");
+
+      tabRegister.classList.remove("active");
+
+      submitBtn.textContent = "Login";
+    };
+
+
+    // =========================
+    // REGISTER TAB
+    // =========================
+
+    tabRegister.onclick = () => {
+
+      mode = "register";
+
+      tabRegister.classList.add("active");
+
+      tabLogin.classList.remove("active");
+
+      submitBtn.textContent = "Register";
+    };
+
+
+    // =========================
+    // LOGIN / REGISTER
+    // =========================
+
+    document
+      .getElementById("authForm")
+      .addEventListener("submit", async (e) => {
+
+        e.preventDefault();
+
+        errorMsg.textContent = "";
+
+
+        const username =
+          document
+            .getElementById("username")
+            .value
+            .trim();
+
+        const password =
+          document
+            .getElementById("password")
+            .value;
+
+        const room =
+          document
+            .getElementById("room")
+            .value
+            .trim() || "general";
+
+
+        try {
+
+          const res = await fetch(
+            `${API_BASE}/api/${mode}`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+                username,
+                password
+              })
+            }
+          );
+
+
+          const data = await res.json();
+
+
+          // =========================
+          // ERROR
+          // =========================
+
+          if (!res.ok) {
+
+            errorMsg.textContent =
+              data.error ||
+              "Something went wrong";
+
+            return;
+          }
+
+
+          // =========================
+          // SAVE LOGIN INFORMATION
+          // =========================
+
+          localStorage.setItem(
+            "token",
+            data.token
+          );
+
+          localStorage.setItem(
+            "username",
+            data.user.username
+          );
+
+          localStorage.setItem(
+            "room",
+            room
+          );
+
+
+          // =========================
+          // SAVE COMPLETE USER OBJECT
+          // =========================
+
+          localStorage.setItem(
+            "user",
+            JSON.stringify(data.user)
+          );
+
+
+          // =========================
+          // SAVE USER ROLE
+          // =========================
+
+          localStorage.setItem(
+            "role",
+            data.user.role || "user"
+          );
+
+
+          console.log(
+            "Logged in user:",
+            data.user
+          );
+
+          console.log(
+            "User role:",
+            data.user.role
+          );
+
+
+          // =========================
+          // OPEN CHAT
+          // =========================
+
+          window.location.href =
+            "index.html";
+
+        }
+
+        catch (err) {
+
+          console.error(err);
+
+          errorMsg.textContent =
+            "Could not reach the server. Is the backend running?";
+
+        }
+
+      });
+
+  </script>
+
+</body>
+</html>
